@@ -53,24 +53,25 @@ def handle(args:argparse.Namespace, original:str, product:str):
 
 def main():
     parser = argparse.ArgumentParser(description="Convert files with ffmpeg")
-    parser.add_argument("path", type=path, nargs="+", help="path to the file(s) you wish to convert")
+    parser.add_argument("paths", default=[], type=path, nargs="?", help="path(s) to the file(s) you wish to convert")
     parser.add_argument("-f", "--format", default="ogg", type=str, help="new format for the file(s) [default=ogg]")
     parser.add_argument("-q", "--quality", default=450, type=int, help="quality (in kbps) of the output file(s) [default=450]")
     parser.add_argument("-d", "--discard", default=False, action="store_true", help="Switch to delete file after conversion is complete")
     parser.add_argument("-s", "--sample", default=False, action="store_true", help="Add file to sample library")
     parser.add_argument("-c", "--config", default=False, action="store_true", help="Print path to settings file")
     
+
     args = parser.parse_args()
     
     if args.config:
         print(settings_file_path)
-    for p in args.path:
+    for p in args.paths:
         if os.path.isdir(p):
             for name in os.listdir(p):
                 src = os.path.join(p, name)
                 out = convert(src, format=args.format, quality=args.quality)
                 handle(args=args, original=src, product=out)
-        else:
+        elif os.path.isfile(p):
             out = convert(p, format=args.format, quality=args.quality)
             handle(args=args, original=p, product=out)
 
