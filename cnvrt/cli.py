@@ -49,7 +49,7 @@ def handle(args:argparse.Namespace, original:str, product:str):
         os.rename(product, os.path.join(sample_folder, name))
     
     if args.discard:
-        os.remove(original)
+        stt.send2trash(original)
 
 def audio(path:str, matters:bool):
     if matters:
@@ -65,7 +65,6 @@ def main():
     parser.add_argument("-s", "--sample", default=False, action="store_true", help="Add file to sample library")
     parser.add_argument("-c", "--config", default=False, action="store_true", help="Print path to settings file")
     parser.add_argument("-a", "--audio", default=False, action="store_true", help="Ignore any paths that don't refer to audio files")
-    
 
     args = parser.parse_args()
     
