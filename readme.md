@@ -15,8 +15,8 @@ The --sample flag sends the output file to a predefined directory. This is parti
 Setting this path is automated, just follow the prompt after using the `-s` or `--sample` flag.
 - This will save your directory to a json file which you can also edit by hand. You can get its path by:
     ```shell
-> cnvrt --config # or -c
-```
+    > cnvrt --config # or -c
+    ```
 
 
 ### todo
