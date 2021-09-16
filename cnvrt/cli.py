@@ -1,4 +1,4 @@
-import os, subprocess, argparse, json
+import os, subprocess, argparse, json, filetype as ft, send2trash as stt
 
 
 this = __file__
@@ -51,6 +51,11 @@ def handle(args:argparse.Namespace, original:str, product:str):
     if args.discard:
         os.remove(original)
 
+def audio(path:str, matters:bool):
+    if matters:
+        return ft.audio_match(path) or path.endswith('.m4a')
+    return True
+
 def main():
     parser = argparse.ArgumentParser(description="Convert files with ffmpeg")
     parser.add_argument("paths", default=[], type=path, nargs="?", help="path(s) to the file(s) you wish to convert")
@@ -59,6 +64,7 @@ def main():
     parser.add_argument("-d", "--discard", default=False, action="store_true", help="Switch to delete file after conversion is complete")
     parser.add_argument("-s", "--sample", default=False, action="store_true", help="Add file to sample library")
     parser.add_argument("-c", "--config", default=False, action="store_true", help="Print path to settings file")
+    parser.add_argument("-a", "--audio", default=False, action="store_true", help="Ignore any paths that don't refer to audio files")
     
 
     args = parser.parse_args()
@@ -69,11 +75,13 @@ def main():
         if os.path.isdir(p):
             for name in os.listdir(p):
                 src = os.path.join(p, name)
-                out = convert(src, format=args.format, quality=args.quality)
-                handle(args=args, original=src, product=out)
+                if audio(path=src, matters=args.audio):
+                    out = convert(src, format=args.format, quality=args.quality)
+                    handle(args=args, original=src, product=out)
         elif os.path.isfile(p):
-            out = convert(p, format=args.format, quality=args.quality)
-            handle(args=args, original=p, product=out)
+            if audio(path=p, matters=args.audio):
+                out = convert(src, format=args.format, quality=args.quality)
+                handle(args=args, original=p, product=out)
 
 if __name__ == '__main__':
     main()
