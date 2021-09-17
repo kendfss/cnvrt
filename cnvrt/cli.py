@@ -30,6 +30,8 @@ def convert(file, format='.mp3', quality=320) -> str:
 def path(argument:str) -> str:
     if os.path.exists(argument):
         return os.path.abspath(argument)
+    elif argument == "":
+        return argument
     raise FileNotFoundError(f'Couldn\'t find "{argument}" in the file system')
 
 def get_sample_dir():
@@ -58,7 +60,7 @@ def audio(path:str, matters:bool):
 
 def main():
     parser = argparse.ArgumentParser(description="Convert files with ffmpeg")
-    parser.add_argument("paths", default=[], type=path, nargs="?", help="path(s) to the file(s) you wish to convert")
+    parser.add_argument("paths", default="", type=path, nargs="*", help="path(s) to the file(s) you wish to convert")
     parser.add_argument("-f", "--format", default="ogg", type=str, help="new format for the file(s) [default=ogg]")
     parser.add_argument("-q", "--quality", default=450, type=int, help="quality (in kbps) of the output file(s) [default=450]")
     parser.add_argument("-d", "--discard", default=False, action="store_true", help="Switch to delete file after conversion is complete")
@@ -70,7 +72,7 @@ def main():
     
     if args.config:
         print(settings_file_path)
-    for p in args.paths:
+    for p in [i for i in args.paths if i.strip() != "/home"]:
         if os.path.isdir(p):
             for name in os.listdir(p):
                 src = os.path.join(p, name)
@@ -79,7 +81,7 @@ def main():
                     handle(args=args, original=src, product=out)
         elif os.path.isfile(p):
             if audio(path=p, matters=args.audio):
-                out = convert(src, format=args.format, quality=args.quality)
+                out = convert(p, format=args.format, quality=args.quality)
                 handle(args=args, original=p, product=out)
 
 if __name__ == '__main__':
